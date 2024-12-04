@@ -15,10 +15,10 @@ TICKET_URL = 'https://www.ticketmaster.ie/fontaines-dc-dublin-06-12-2024/event/1
 def check_tickets(driver):
     try:
         driver.get(TICKET_URL)
-        random_sleep(3, 6)
+        random_sleep(1, 3)
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        random_sleep(1, 3)
+        random_sleep(1, 2)
         driver.execute_script("window.scrollTo(0, -document.body.scrollHeight);")
         random_sleep(1, 2)
 
@@ -57,18 +57,15 @@ def main():
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    try:
-        while True:
-            print("Hunting for standing tickets...")
-            if check_tickets(driver):
-                print("Standing tickets found!")
-                open_link()
-            else:
-                print("No standing tickets available. We'll get them next time...")
+    while True:
+        print("Hunting for standing tickets...")
+        if check_tickets(driver):
+            print("Standing tickets found!")
+            open_link()
+        else:
+            print("No standing tickets available. We'll get them next time...")
 
-            random_sleep(60, 90)
-    finally:
-        driver.quit()  
+        random_sleep(30, 40)
 
 if __name__ == "__main__":
     main()
