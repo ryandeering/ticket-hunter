@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 
-TICKET_URL = 'https://www.ticketmaster.ie/fontaines-dc-dublin-06-12-2024/event/1800608AAFFF287C'
+TICKET_URL = 'https://www.eventbrite.com/e/foggy-notions-presents-a-live-event-tickets-1972352268730?aff=oddtdtcreator&lang=en-us&locale=en_US&status=30&view=listing'
 
 def check_tickets(driver):
     try:
@@ -24,11 +24,16 @@ def check_tickets(driver):
 
         wait = WebDriverWait(driver, 3)
 
-        standing_elements = wait.until(
-            EC.presence_of_all_elements_located((By.XPATH, "//dd[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'standing')]"))
+        # Look for any element (e.g., button or link) containing "join waitlist" (case-insensitive)
+        get_tickets_elements = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.XPATH,
+                 "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'get tickets')]"
+                )
+            )
         )
 
-        if standing_elements:
+        if get_tickets_elements:
             return True
 
     except TimeoutException:
@@ -58,12 +63,12 @@ def main():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     while True:
-        print("Hunting for standing tickets...")
+        print("Hunting for tickets...")
         if check_tickets(driver):
-            print("Standing tickets found!")
+            print("Tickets found!")
             open_link()
         else:
-            print("No standing tickets available. We'll get them next time...")
+            print("No tickets yet.")
 
         random_sleep(30, 40)
 
