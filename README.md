@@ -7,12 +7,12 @@ Scripts for watching Eventbrite and Ticketmaster pages until tickets appear.
 - **main_eventbrite_no_email.py** - Watches an Eventbrite event, opens your browser when tickets show up
 - **main_ticketmaster_email.py** - Watches a Ticketmaster event, emails you when tickets show up
 
-## What You Need
+## Requirements
 
-- Python 3.7+
-- Chrome installed
+- Python 3.7 or newer
+- Chrome browser
 - Gmail account (only for the Ticketmaster script)
-- Works on Windows, macOS, Linux
+- Windows, macOS, or Linux
 
 ## Setup
 
@@ -29,12 +29,19 @@ If that fails, try `python3` instead. Use whichever works for all the commands b
 
 ### 2. Get the Code
 
+**Option A - Using Git (if you have it):**
 ```bash
-git clone <repository-url>
+git clone https://github.com/ryandeering/ticket-hunter
 cd ticket-hunter
 ```
 
-Or just download and unzip it.
+**Option B - Download ZIP:**
+1. Go to https://github.com/ryandeering/ticket-hunter
+2. Click "Code" → "Download ZIP"
+3. Extract and navigate to the folder:
+   ```bash
+   cd path/to/ticket-hunter
+   ```
 
 ### 3. Install Dependencies
 
@@ -46,9 +53,9 @@ This pulls in selenium and webdriver-manager.
 
 ## Eventbrite Script
 
-### Config
+### Configuration
 
-Open `main_eventbrite_no_email.py` and change line 13 to your event:
+Open `main_eventbrite_no_email.py` in a text editor and update line 13 with your event URL:
 
 ```python
 TICKET_URL = 'https://www.eventbrite.com/e/event-name-tickets-123456789'
@@ -60,7 +67,7 @@ TICKET_URL = 'https://www.eventbrite.com/e/event-name-tickets-123456789'
 python main_eventbrite_no_email.py
 ```
 
-It runs Chrome in the background, checks the page every 30-40 seconds. When it finds tickets, it opens your browser to the event page and keeps watching.
+Runs Chrome in headless mode and checks the page every 30-40 seconds. When tickets appear, opens your default browser to the event page. Continues monitoring after finding tickets.
 
 ```
 Beginning hunt!
@@ -70,30 +77,34 @@ Hunting for tickets...
 Tickets found!
 ```
 
-Ctrl+C to stop (Cmd+C on Mac).
+Stop with Ctrl+C (Cmd+C on Mac).
 
 ## Ticketmaster Script
 
-### Gmail Setup
+### Gmail Setup (Important!)
 
-You need an App Password for this. Regular Gmail passwords won't work.
+You need a special password for this. **Your regular Gmail password won't work** - you need to create an "App Password".
 
-1. Go to [myaccount.google.com/security](https://myaccount.google.com/security), turn on 2-Step Verification
-2. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-3. Pick "Other", call it whatever you want
-4. Copy the 16-character password it gives you
-5. Remove the spaces before using it
+**Step-by-step:**
+1. Go to [myaccount.google.com/security](https://myaccount.google.com/security)
+2. Find "2-Step Verification" and turn it on (if it isn't already)
+3. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+4. Under "Select app", choose "Other (Custom name)"
+5. Type something like "Ticket Hunter" and click Generate
+6. Google will show you a 16-character password like `abcd efgh ijkl mnop`
+7. Copy it and remove all the spaces so it looks like `abcdefghijklmnop`
+8. Keep this password - you'll need it in the next step
 
-### Config
+### Configuration
 
 Edit `main_ticketmaster_email.py`:
 
-Line 18 - your event URL:
+**Line 18** - Your event URL:
 ```python
 TICKET_URL = "https://www.ticketmaster.ie/fontaines-dc-dublin-06-12-2024/event/1800608AAFFF287C"
 ```
 
-Lines 24-26 - email stuff:
+**Lines 24-26** - Email configuration:
 ```python
 SENDER_EMAIL = "your-email@gmail.com"
 SENDER_PASSWORD = "abcdefghijklmnop"
@@ -106,7 +117,7 @@ RECIPIENT_EMAIL = "your-email@gmail.com"
 python main_ticketmaster_email.py
 ```
 
-First run sends a test email to make sure SMTP works. Creates a `.first_run_complete` file so it doesn't do that every time. Delete the file if you want to test again.
+First run sends a test email to verify SMTP configuration. Creates `.first_run_complete` marker file. Delete this file to re-test email setup.
 
 It looks for "Standing" or "General Admission" ticket types every 30-40 seconds. Won't spam you - there's a 5-minute cooldown between emails.
 
@@ -134,9 +145,9 @@ Tickets found!
 Email sent successfully! Subject: Tickets available!
 ```
 
-Ctrl+C to stop.
+Stop with Ctrl+C (Cmd+C on Mac).
 
-## When Things Break
+## Troubleshooting
 
 ### "Authentication failed" or password rejected
 
@@ -154,14 +165,15 @@ pip install -r requirements.txt
 
 ### Chrome not found
 
-**Windows/macOS:** Install Chrome from [google.com/chrome](https://www.google.com/chrome/)
+**Windows/macOS:**
+Install from [google.com/chrome](https://www.google.com/chrome/)
 
-**Linux (x86_64):**
+**Linux:**
 ```bash
 sudo apt install google-chrome-stable
 ```
 
-**Linux (ARM/Pi):**
+**Linux (ARM):**
 ```bash
 sudo apt install chromium-chromedriver chromium-browser
 ```
@@ -198,13 +210,13 @@ Check your spam folder. Mark it "Not Spam" if it's there. Also check Gmail didn'
 4. Looks for "Standing" or "General Admission"
 5. Emails you when found (5-min cooldown between emails)
 
-## Worth Noting
+## Notes
 
-- Keep your terminal open - the script needs to stay running
-- This just watches and alerts. You still have to buy the tickets yourself
-- If the website changes their page structure, the selectors will break
-- The App Password only lets things send email, it can't read your Gmail or anything else
-- You can revoke it anytime at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+- Keep terminal open - script must stay running to monitor
+- Alerts only - doesn't purchase tickets automatically
+- Website changes may break monitoring (selectors need updating)
+- App Password only grants email sending access
+- Revoke access anytime at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
 
 ## Watching Multiple Events
 
